@@ -13,17 +13,17 @@ import com.nelioalves.workshopmongo.services.exception.ObjectNotFoundException;
 
 @Service
 public class UserService {
-	
-	//nao precisa intanciar objeto
+
+	// nao precisa intanciar objeto
 	@Autowired
 	private UserRepository repo;
-	
-	public List<User> findAll(){
+
+	public List<User> findAll() {
 		return repo.findAll();
 	}
-	
+
 	public User findById(String id) {
-		//SPRING 1.X.X
+		// SPRING 1.X.X
 //		User user = repo.findOne(id);
 //		if(user == null) {
 //			throw new ObjectNotFoundException("Objeto nao encontrado");
@@ -32,24 +32,31 @@ public class UserService {
 		// SPRING 2.X.X
 		Optional<User> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
-			
+
 	}
-	
+
 	public User insert(User obj) {
 		return repo.insert(obj);
 	}
-	
+
 	public void delete(String id) {
 		findById(id);
 		repo.deleteById(id);
 	}
-	
-	public User fromDTO(UserDTO objDTO) {
-		return new User(objDTO.getId()
-				,objDTO.getName()
-				,objDTO.getEmail()
-				);
+
+	public User update(User obj) {
+		User newObj = findById(obj.getId());
+		updateData(newObj, obj);
+		return repo.save(newObj);
 	}
-	
-	
+
+	private void updateData(User newObj, User obj) {
+		newObj.setName(obj.getName());
+		newObj.setEmail(obj.getEmail());
+	}
+
+	public User fromDTO(UserDTO objDTO) {
+		return new User(objDTO.getId(), objDTO.getName(), objDTO.getEmail());
+	}
+
 }
